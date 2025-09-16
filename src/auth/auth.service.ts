@@ -4,19 +4,22 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Prisma, User } from 'generated/prisma';
-
+import { Prisma } from 'generated/prisma';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/database/prisma.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   @Inject()
   private readonly prisma: PrismaService;
 
+  @Inject()
+  private readonly jwtService: JwtService;
+
   async signIn(
     params: Prisma.UserCreateInput,
-  ): Promise<Omit<User, 'password'> | null> {
+  ): Promise<{ access_token: string }> {
     const user = await this.prisma.user.findUnique({
       where: { email: params.email },
     });
@@ -26,8 +29,10 @@ export class AuthService {
     if (!passwordMatch)
       throw new UnauthorizedException('Credenciais inválidas');
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...safe } = user;
-    return safe;
+    const payload = { sub: user.id };
+
+    return {
+      access_token: await this.jwtService.signAsync(payload),
+    };
   }
 }

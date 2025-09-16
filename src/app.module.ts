@@ -7,6 +7,7 @@ import { UserController } from './user/user.controller';
 import { UserService } from './user/user.service';
 import { DatabaseModule } from './database/database.module';
 import { PrismaService } from './database/prisma.service';
+
 @Module({
   imports: [AuthModule, UserModule, DatabaseModule],
   controllers: [AuthController, UserController],

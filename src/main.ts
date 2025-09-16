@@ -3,7 +3,9 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    cors: true,
+  });
   const config = new DocumentBuilder()
     .setTitle('Conectar API')
     .setDescription('The Conectar API description')
@@ -16,4 +18,5 @@ async function bootstrap() {
   });
   await app.listen(process.env.PORT ?? 3000);
 }
+
 void bootstrap();
